@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" 
+  - package-ecosystem: "gitsubmodule" 
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
