@@ -150,32 +150,28 @@
 
 
 
-
-
-
-
-
-                                                     <div class="vote roundrect">
-  <div class="increment up"></div>
-  <div class="increment down"></div>
-  
-  <div class="count">4</div>
+             <div id="app">
+  <div class="container-fluid">
+    <ul class="list-group">
+      <post v-for="post in posts" :post="post"></post>
+    </ul>
+  </div>
 </div>
 
-<div class="vote chev">
-  <div class="increment up"></div>
-  <div class="increment down"></div>
-  
-  <div class="count">0</div>
-</div>
+<template id="post-template">
+	<li class="list-group-item">
+		<i class="glyphicon glyphicon-chevron-up" @click="upvote"></i>
+		<span class="label label-primary">{{ votes }}</span>
+		<i class="glyphicon glyphicon-chevron-down" @click="downvote"></i>
+		<a>{{ post.title }}</a>
+	</li>
+</template>
 
-<div class="vote circle">
-  <div class="increment up"></div>
-  <div class="increment down"></div>
-  
-  <div class="count">8</div>
-</div>                                                  
-                                                                                                                                                                                                                                                                                                              
+
+
+
+
+                                                                                                                                                                                                                                                                
       </footer>
  
   </body>
