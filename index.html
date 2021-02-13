@@ -155,8 +155,32 @@
 
 
 
-                                                      <i class="fas fa-thumbs-up" onclick="like()"></i>
-<i class="fas fa-thumbs-down" onclick="dislike()"></i>
+                                                      var color1 = document.getElementsByClassName('fa-thumbs-up')[0];
+var color2 = document.getElementsByClassName('fa-thumbs-down')[0];
+
+function like(){
+  if(color1.style.color== "black"){
+    color1.style.color= "blue";
+  }
+  else if(color1.style.color == "blue"){
+    color1.style.color = "black";
+  }
+  else if (color2.style.color == "blue") {
+    color2.style.color = "black";
+  }
+}
+
+function dislike(){
+  if (color2.style.color == "black") {
+    color2.style.color = "blue";
+  }
+  else if (color2.style.color == "blue") {
+    color2.style.color = "black";
+  }
+  else if (color1.style.color == "blue") {
+    color1.style.color = "black";
+  }
+}
                                                                                                                                                                      </span>
                                                                                                                                                                                   
                                                                                                                                                                                
