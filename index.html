@@ -186,101 +186,218 @@ google.dom.append(a)}}function e(){if(document.f&&document.f.btnI)document.f.btn
 
 
 
-
-<div id="centerbox">
-<TABLE cellspacing="0" cellpadding="0" width="100%" height="68%"><TBODY><TR><TD valign="middle">
-
-    <DIV id="tetris">
-        <DIV class="left">
-            <H1>Tetris Game</H1>
-            <DIV class="menu">
-                <DIV><INPUT type="button" value="New Game" id="tetris-menu-start"></DIV>
-                <DIV><INPUT type="button" value="Reset" id="tetris-menu-reset"></DIV>
-                <DIV><INPUT type="button" value="Help" id="tetris-menu-help"></DIV>
-                <DIV><INPUT type="button" value="Highscores" id="tetris-menu-highscores"></DIV>
-            </DIV>
-            <DIV class="keyboard">
-                <DIV class="up"><INPUT type="button" value="^" id="tetris-keyboard-up"></DIV>
-                <DIV class="down"><INPUT type="button" value="v" id="tetris-keyboard-down"></DIV>
-                <DIV class="left"><INPUT type="button" value="&lt;" id="tetris-keyboard-left"></DIV>
-                <DIV class="right"><INPUT type="button" value="&gt;" id="tetris-keyboard-right"></DIV>
-            </DIV>
-            <DIV id="tetris-nextpuzzle" style="display: none; "></DIV>
-            <DIV id="tetris-gameover" style="display: none; ">Game Over</DIV>
-            <DIV class="stats">
-                <TABLE cellspacing="0" cellpadding="0">
-                <TBODY><TR>
-                    <TD class="level">Level:</TD>
-                    <TD><SPAN id="tetris-stats-level">1</SPAN></TD>
-                </TR>
-                <TR>
-                    <TD class="score">Score:</TD>
-                    <TD><SPAN id="tetris-stats-score">0</SPAN></TD>
-                </TR>
-                <TR>
-                    <TD class="lines">Lines:</TD>
-                    <TD><SPAN id="tetris-stats-lines">0</SPAN></TD>
-                </TR>
-                <TR>
-                    <TD class="apm">APM:</TD>
-                    <TD><SPAN id="tetris-stats-apm">0</SPAN></TD>
-                </TR>
-                <TR>
-                    <TD class="time">Time:</TD>
-                    <TD><SPAN id="tetris-stats-time">0</SPAN></TD>
-                </TR>
-                
-                </TBODY></TABLE>
-            </DIV>
-        </DIV>
-        <DIV id="tetris-area"></DIV>
-        <DIV id="tetris-help" class="window" style="display: none; ">
-            <DIV class="top">
-                Help <SPAN id="tetris-help-close" class="close">x</SPAN>
-            </DIV>
-            <DIV class="content">
-                <B>Controllers:</B> <BR>
-                up - rotate <BR>
-                down - move down <BR>
-                left - move left <BR>
-                right - move right <BR>
-                space - fall to the bottom <BR>
-                n - new game <BR>
-                r - reset <BR>
-                <BR>
-                <B>Rules:</B> <BR>
-                1) Puzzle speed = 80+700/level miliseconds, the smaller value the faster puzzle falls <BR>
-                2) If puzzles created in current level &gt;= 10+level*2 then increase level <BR>
-                3) After puzzle falling score is increased by 1000*level*linesRemoved <BR>
-                4) Each "down" action increases score by 5+level (pressing space counts as multiple down actions)
-            </DIV>
-        </DIV>
-        <DIV id="tetris-highscores" class="window" style="display: none; ">
-            <DIV class="top">
-                Highscores <SPAN id="tetris-highscores-close" class="close">x</SPAN>
-            </DIV>
-            <DIV class="content">
-                <DIV id="tetris-highscores-content"></DIV>
-                <BR>
-                Note: these scores are kept in cookies, they are only visible to your computer, other players that visit this page see their own scores.
-            </DIV>
-        </DIV>
-    </DIV>  
-    </TD></TR></TBODY></TABLE>
-</div> 
-
-
-
-
-
-
-<iframe src="https://funhtml5games.com?embed=mineblock" style="width:854px;height:480px;border:none;" frameborder="0" scrolling="no"></iframe>
-
-
-
 						
 
-            
+  ;
+				else this.paddle.y -= this.paddle.speed / 4;
+			}
+			if (this.paddle.y < this.ball.y - (this.paddle.height / 2)) {
+				if (this.ball.moveX === DIRECTION.RIGHT) this.paddle.y += this.paddle.speed / 1.5;
+				else this.paddle.y += this.paddle.speed / 4;
+			}
+
+			// Handle paddle (AI) wall collision
+			if (this.paddle.y >= this.canvas.height - this.paddle.height) this.paddle.y = this.canvas.height - this.paddle.height;
+			else if (this.paddle.y <= 0) this.paddle.y = 0;
+
+			// Handle Player-Ball collisions
+			if (this.ball.x - this.ball.width <= this.player.x && this.ball.x >= this.player.x - this.player.width) {
+				if (this.ball.y <= this.player.y + this.player.height && this.ball.y + this.ball.height >= this.player.y) {
+					this.ball.x = (this.player.x + this.ball.width);
+					this.ball.moveX = DIRECTION.RIGHT;
+
+					beep1.play();
+				}
+			}
+
+			// Handle paddle-ball collision
+			if (this.ball.x - this.ball.width <= this.paddle.x && this.ball.x >= this.paddle.x - this.paddle.width) {
+				if (this.ball.y <= this.paddle.y + this.paddle.height && this.ball.y + this.ball.height >= this.paddle.y) {
+					this.ball.x = (this.paddle.x - this.ball.width);
+					this.ball.moveX = DIRECTION.LEFT;
+
+					beep1.play();
+				}
+			}
+		}
+
+		// Handle the end of round transition
+		// Check to see if the player won the round.
+		if (this.player.score === rounds[this.round]) {
+			// Check to see if there are any more rounds/levels left and display the victory screen if
+			// there are not.
+			if (!rounds[this.round + 1]) {
+				this.over = true;
+				setTimeout(function () { Pong.endGameMenu('Winner!'); }, 1000);
+			} else {
+				// If there is another round, reset all the values and increment the round number.
+				this.color = this._generateRoundColor();
+				this.player.score = this.paddle.score = 0;
+				this.player.speed += 0.5;
+				this.paddle.speed += 1;
+				this.ball.speed += 1;
+				this.round += 1;
+
+				beep3.play();
+			}
+		}
+		// Check to see if the paddle/AI has won the round.
+		else if (this.paddle.score === rounds[this.round]) {
+			this.over = true;
+			setTimeout(function () { Pong.endGameMenu('Game Over!'); }, 1000);
+		}
+	},
+
+	// Draw the objects to the canvas element
+	draw: function () {
+		// Clear the Canvas
+		this.context.clearRect(
+			0,
+			0,
+			this.canvas.width,
+			this.canvas.height
+		);
+
+		// Set the fill style to black
+		this.context.fillStyle = this.color;
+
+		// Draw the background
+		this.context.fillRect(
+			0,
+			0,
+			this.canvas.width,
+			this.canvas.height
+		);
+
+		// Set the fill style to white (For the paddles and the ball)
+		this.context.fillStyle = '#ffffff';
+
+		// Draw the Player
+		this.context.fillRect(
+			this.player.x,
+			this.player.y,
+			this.player.width,
+			this.player.height
+		);
+
+		// Draw the Paddle
+		this.context.fillRect(
+			this.paddle.x,
+			this.paddle.y,
+			this.paddle.width,
+			this.paddle.height
+		);
+
+		// Draw the Ball
+		if (Pong._turnDelayIsOver.call(this)) {
+			this.context.fillRect(
+				this.ball.x,
+				this.ball.y,
+				this.ball.width,
+				this.ball.height
+			);
+		}
+
+		// Draw the net (Line in the middle)
+		this.context.beginPath();
+		this.context.setLineDash([7, 15]);
+		this.context.moveTo((this.canvas.width / 2), this.canvas.height - 140);
+		this.context.lineTo((this.canvas.width / 2), 140);
+		this.context.lineWidth = 10;
+		this.context.strokeStyle = '#ffffff';
+		this.context.stroke();
+
+		// Set the default canvas font and align it to the center
+		this.context.font = '100px Courier New';
+		this.context.textAlign = 'center';
+
+		// Draw the players score (left)
+		this.context.fillText(
+			this.player.score.toString(),
+			(this.canvas.width / 2) - 300,
+			200
+		);
+
+		// Draw the paddles score (right)
+		this.context.fillText(
+			this.paddle.score.toString(),
+			(this.canvas.width / 2) + 300,
+			200
+		);
+
+		// Change the font size for the center score text
+		this.context.font = '30px Courier New';
+
+		// Draw the winning score (center)
+		this.context.fillText(
+			'Round ' + (Pong.round + 1),
+			(this.canvas.width / 2),
+			35
+		);
+
+		// Change the font size for the center score value
+		this.context.font = '40px Courier';
+
+		// Draw the current round number
+		this.context.fillText(
+			rounds[Pong.round] ? rounds[Pong.round] : rounds[Pong.round - 1],
+			(this.canvas.width / 2),
+			100
+		);
+	},
+
+	loop: function () {
+		Pong.update();
+		Pong.draw();
+
+		// If the game is not over, draw the next frame.
+		if (!Pong.over) requestAnimationFrame(Pong.loop);
+	},
+
+	listen: function () {
+		document.addEventListener('keydown', function (key) {
+			// Handle the 'Press any key to begin' function and start the game.
+			if (Pong.running === false) {
+				Pong.running = true;
+				window.requestAnimationFrame(Pong.loop);
+			}
+
+			// Handle up arrow and w key events
+			if (key.keyCode === 38 || key.keyCode === 87) Pong.player.move = DIRECTION.UP;
+
+			// Handle down arrow and s key events
+			if (key.keyCode === 40 || key.keyCode === 83) Pong.player.move = DIRECTION.DOWN;
+		});
+
+		// Stop the player from moving when there are no keys being pressed.
+		document.addEventListener('keyup', function (key) { Pong.player.move = DIRECTION.IDLE; });
+	},
+
+	// Reset the ball location, the player turns and set a delay before the next round begins.
+	_resetTurn: function(victor, loser) {
+		this.ball = Ball.new.call(this, this.ball.speed);
+		this.turn = loser;
+		this.timer = (new Date()).getTime();
+
+		victor.score++;
+		beep2.play();
+	},
+
+	// Wait for a delay to have passed after each turn.
+	_turnDelayIsOver: function() {
+		return ((new Date()).getTime() - this.timer >= 1000);
+	},
+
+	// Select a random color as the background of each level/round.
+	_generateRoundColor: function () {
+		var newColor = colors[Math.floor(Math.random() * colors.length)];
+		if (newColor === this.color) return Pong._generateRoundColor();
+		return newColor;
+	}
+};
+
+var Pong = Object.assign({}, Game);
+Pong.initialize();          
 
 
 
